@@ -18,7 +18,7 @@ type Customer struct {
 	sales.UnimplementedCustomerServiceServer
 }
 
-func (u *Customer) Create(ctx context.Context, in *sales.Customer) (*sales.Customer, error) {
+func (u *Customer) CustomerCreate(ctx context.Context, in *sales.Customer) (*sales.Customer, error) {
 	var customerModel model.Customer
 	var err error
 
@@ -73,7 +73,7 @@ func (u *Customer) Create(ctx context.Context, in *sales.Customer) (*sales.Custo
 	return &customerModel.Pb, nil
 }
 
-func (u *Customer) Update(ctx context.Context, in *sales.Customer) (*sales.Customer, error) {
+func (u *Customer) CustomerUpdate(ctx context.Context, in *sales.Customer) (*sales.Customer, error) {
 	var customerModel model.Customer
 	var err error
 
@@ -112,7 +112,7 @@ func (u *Customer) Update(ctx context.Context, in *sales.Customer) (*sales.Custo
 	return &customerModel.Pb, nil
 }
 
-func (u *Customer) View(ctx context.Context, in *sales.Id) (*sales.Customer, error) {
+func (u *Customer) CustomerView(ctx context.Context, in *sales.Id) (*sales.Customer, error) {
 	var customerModel model.Customer
 	var err error
 
@@ -134,7 +134,7 @@ func (u *Customer) View(ctx context.Context, in *sales.Id) (*sales.Customer, err
 	return &customerModel.Pb, nil
 }
 
-func (u *Customer) Delete(ctx context.Context, in *sales.Id) (*sales.MyBoolean, error) {
+func (u *Customer) CustomerDelete(ctx context.Context, in *sales.Id) (*sales.MyBoolean, error) {
 	var output sales.MyBoolean
 	output.Boolean = false
 
@@ -165,7 +165,7 @@ func (u *Customer) Delete(ctx context.Context, in *sales.Id) (*sales.MyBoolean, 
 	return &output, nil
 }
 
-func (u *Customer) List(in *sales.Pagination, stream sales.CustomerService_CustomerListServer) error {
+func (u *Customer) CustomerList(in *sales.ListCustomerRequest, stream sales.CustomerService_CustomerListServer) error {
 	ctx := stream.Context()
 	ctx, err := app.GetMetadata(ctx)
 	if err != nil {
@@ -173,14 +173,17 @@ func (u *Customer) List(in *sales.Pagination, stream sales.CustomerService_Custo
 	}
 
 	var customerModel model.Customer
-	query, paramQueries, paginationResponse, err := customerModel.ListQuery(ctx, u.Db, in)
+	query, paramQueries, paginationResponse, err := customerModel.ListQuery(ctx, u.Db, in.Pagination)
+	if err != nil {
+		return err
+	}
 
 	rows, err := u.Db.QueryContext(ctx, query, paramQueries...)
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
 	defer rows.Close()
-	paginationResponse.Pagination = in
+	paginationResponse.Pagination = in.Pagination
 
 	for rows.Next() {
 		err := app.ContextError(ctx)
