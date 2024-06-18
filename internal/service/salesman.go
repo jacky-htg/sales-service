@@ -18,7 +18,7 @@ type Salesman struct {
 	sales.UnimplementedSalesmanServiceServer
 }
 
-func (u *Salesman) Create(ctx context.Context, in *sales.Salesman) (*sales.Salesman, error) {
+func (u *Salesman) SalesmanCreate(ctx context.Context, in *sales.Salesman) (*sales.Salesman, error) {
 	var salesmanModel model.Salesman
 	var err error
 
@@ -78,7 +78,7 @@ func (u *Salesman) Create(ctx context.Context, in *sales.Salesman) (*sales.Sales
 	return &salesmanModel.Pb, nil
 }
 
-func (u *Salesman) Update(ctx context.Context, in *sales.Salesman) (*sales.Salesman, error) {
+func (u *Salesman) SalesmanUpdate(ctx context.Context, in *sales.Salesman) (*sales.Salesman, error) {
 	var salesmanModel model.Salesman
 	var err error
 
@@ -121,7 +121,7 @@ func (u *Salesman) Update(ctx context.Context, in *sales.Salesman) (*sales.Sales
 	return &salesmanModel.Pb, nil
 }
 
-func (u *Salesman) View(ctx context.Context, in *sales.Id) (*sales.Salesman, error) {
+func (u *Salesman) SalesmanView(ctx context.Context, in *sales.Id) (*sales.Salesman, error) {
 	var salesmanModel model.Salesman
 	var err error
 
@@ -143,7 +143,7 @@ func (u *Salesman) View(ctx context.Context, in *sales.Id) (*sales.Salesman, err
 	return &salesmanModel.Pb, nil
 }
 
-func (u *Salesman) Delete(ctx context.Context, in *sales.Id) (*sales.MyBoolean, error) {
+func (u *Salesman) SalesmanDelete(ctx context.Context, in *sales.Id) (*sales.MyBoolean, error) {
 	var output sales.MyBoolean
 	output.Boolean = false
 
@@ -174,7 +174,7 @@ func (u *Salesman) Delete(ctx context.Context, in *sales.Id) (*sales.MyBoolean, 
 	return &output, nil
 }
 
-func (u *Salesman) List(in *sales.Pagination, stream sales.SalesmanService_SalesmanListServer) error {
+func (u *Salesman) SalesmanList(in *sales.ListSalesmanRequest, stream sales.SalesmanService_SalesmanListServer) error {
 	ctx := stream.Context()
 	ctx, err := app.GetMetadata(ctx)
 	if err != nil {
@@ -182,14 +182,17 @@ func (u *Salesman) List(in *sales.Pagination, stream sales.SalesmanService_Sales
 	}
 
 	var salesmanModel model.Salesman
-	query, paramQueries, paginationResponse, err := salesmanModel.ListQuery(ctx, u.Db, in)
+	query, paramQueries, paginationResponse, err := salesmanModel.ListQuery(ctx, u.Db, in.Pagination)
+	if err != nil {
+		return err
+	}
 
 	rows, err := u.Db.QueryContext(ctx, query, paramQueries...)
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
 	defer rows.Close()
-	paginationResponse.Pagination = in
+	paginationResponse.Pagination = in.Pagination
 
 	for rows.Next() {
 		err := app.ContextError(ctx)

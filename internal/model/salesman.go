@@ -187,7 +187,7 @@ func (u *Salesman) ListQuery(ctx context.Context, db *sql.DB, in *sales.Paginati
 	paramQueries := []interface{}{ctx.Value(app.Ctx("companyID")).(string)}
 
 	if len(in.GetSearch()) > 0 {
-		paramQueries = append(paramQueries, in.GetSearch())
+		paramQueries = append(paramQueries, "%"+in.GetSearch()+"%")
 		where = append(where, fmt.Sprintf(`(name ILIKE $%d OR code ILIKE $%d OR address ILIKE $%d OR phone ILIKE $%d)`, len(paramQueries), len(paramQueries), len(paramQueries), len(paramQueries)))
 	}
 
