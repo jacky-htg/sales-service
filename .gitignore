@@ -20,3 +20,5 @@ log
 
 go.sum
 pb
+sales-service
+cmd-sales-service

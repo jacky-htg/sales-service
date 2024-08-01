@@ -6,11 +6,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/jacky-htg/erp-pkg/db/postgres"
+	"github.com/jacky-htg/sales-service/internal/config"
+	"github.com/jacky-htg/sales-service/internal/schema"
 	_ "github.com/lib/pq"
-
-	"sales/internal/config"
-	"sales/internal/pkg/db/postgres"
-	"sales/internal/schema"
 )
 
 func main() {

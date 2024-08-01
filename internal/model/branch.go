@@ -3,9 +3,9 @@ package model
 import (
 	"context"
 	"io"
-	"sales/internal/pkg/app"
-	"sales/pb/users"
 
+	"github.com/jacky-htg/erp-pkg/app"
+	"github.com/jacky-htg/erp-proto/go/pb/users"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

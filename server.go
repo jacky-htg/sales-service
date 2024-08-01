@@ -1,16 +1,15 @@
 package main
 
 import (
+	"log"
 	"net"
 	"os"
 
+	"github.com/jacky-htg/erp-pkg/db/postgres"
+	"github.com/jacky-htg/sales-service/internal/config"
+	"github.com/jacky-htg/sales-service/internal/route"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
-
-	"sales/internal/config"
-	"sales/internal/pkg/db/postgres"
-	"sales/internal/pkg/log/logruslog"
-	"sales/internal/route"
 )
 
 const defaultPort = "8002"
@@ -27,16 +26,14 @@ func main() {
 	}
 
 	// init log
-	log := logruslog.Init()
+	log := log.New(os.Stdout, "ERROR : ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 
 	// create postgres database connection
 	db, err := postgres.Open()
 	if err != nil {
-		log.Errorf("connecting to db: %v", err)
+		log.Fatalf("connecting to db: %v", err)
 		return
 	}
-	log.Info("connecting to postgresql database")
-
 	defer db.Close()
 
 	// listen tcp port
@@ -66,5 +63,4 @@ func main() {
 		log.Fatalf("failed to serve: %s", err)
 		return
 	}
-	log.Info("serve grpc on port: " + port)
 }

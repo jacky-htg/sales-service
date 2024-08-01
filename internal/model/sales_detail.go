@@ -4,10 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"sales/internal/pkg/app"
-	"sales/pb/sales"
-
 	"github.com/google/uuid"
+	"github.com/jacky-htg/erp-pkg/app"
+	"github.com/jacky-htg/erp-proto/go/pb/sales"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
